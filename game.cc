@@ -10,7 +10,16 @@ Game::Game()
 
 void Game::run()
 {
-    ::SDL_Delay(1000);
+    ::SDL_Event e;
+    while (true) {
+        while (::SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                return;
+            }
+        }
+
+        ::SDL_Delay(100);
+    }
 }
 
 } // namespace Oso
