@@ -21,77 +21,50 @@ private:
     std::string _e;
 };
 
-inline void throw_error[[noreturn]](const std::string& why)
-{
-    throw exception(why + " : " + ::SDL_GetError());
-}
-/*
-template <typename T>
-class uique_ptr_with_deleter_fun {
-public:
-    using deleter_fun_t = void (*)(T*);
-
-    uique_ptr_with_deleter_fun() = default;
-    uique_ptr_with_deleter_fun(T* p, deleter_fun_t d)
+template <typename T, void(DeleterFun)(T*)>
+struct UniquePtr {
+    UniquePtr() = default;
+    UniquePtr(T* p)
         : _p(p)
-        , _d(d)
     {
     }
-    uique_ptr_with_deleter_fun(const uique_ptr_with_deleter_fun&) = delete;
-    uique_ptr_with_deleter_fun(uique_ptr_with_deleter_fun&& o) noexcept
+    UniquePtr(const UniquePtr&) = delete;
+    UniquePtr(UniquePtr&& o)
     {
         _p = o._p;
-        _d = o._d;
         o._p = nullptr;
     }
-
-    ~uique_ptr_with_deleter_fun() { free(); }
-
-    uique_ptr_with_deleter_fun& operator==(uique_ptr_with_deleter_fun&& o) noexcept
-    {
-        free();
-        _p = o._p;
-        _d = o._d;
-        o._p = nullptr;
-    }
-
-private:
-    void free()
+    ~UniquePtr()
     {
         if (_p)
-            _d(_p);
+            DeleterFun(_p);
     }
 
+    UniquePtr& operator=(const UniquePtr& o) = delete;
+    UniquePtr& operator=(UniquePtr&& o)
+    {
+        if (_p)
+            DeleterFun(_p);
+        _p = o._p;
+        o._p = nullptr;
+        return *this;
+    }
+
+    operator T*() { return _p; }
+
+private:
     T* _p = nullptr;
-    deleter_fun_t _d = nullptr;
-};
-*/
-//using win_ptr = std::unique_ptr<::SDL_Window, decltype([](::SDL_Window* w) { ::SDL_DestroyWindow(w); })>;
-//struct WinDeleter {
-//    WinDeleter() = default;
-//    void operator()(::SDL_Window* win) { ::SDL_DestroyWindow(win); }
-//};
-
-template <typename T, void(DeleterFun)(T*)>
-struct Deleter {
-    Deleter() = default;
-    void operator()(T* p) { DeleterFun(p); }
 };
 
-using win_ptr = std::unique_ptr<::SDL_Window, Deleter<::SDL_Window, &::SDL_DestroyWindow>>;
-//using win_ptr = std::unique_ptr<::SDL_Window>;
-
-inline win_ptr create_window(const char* title,
+using window = UniquePtr<::SDL_Window, &::SDL_DestroyWindow>;
+window create_window(const char* title,
     int x,
     int y,
     int w,
     int h,
-    Uint32 flags)
-{
-    ::SDL_Window* win = ::SDL_CreateWindow(title, x, y, w, h, flags);
-    if (!win)
-        throw_error("Failed to create window");
+    Uint32 flags);
 
-    return win_ptr(win);
-}
-}
+using renderer = UniquePtr<::SDL_Renderer, &::SDL_DestroyRenderer>;
+renderer create_renderer(SDL_Window* window, int index, Uint32 flags);
+
+} // ns

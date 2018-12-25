@@ -8,7 +8,7 @@ find_package(SDL2 REQUIRED)
 add_executable(oso
     main.cc
     game.cc game.hh
-    sdl.h
+    sdl.cc sdl.h
 )
 
 target_include_directories(oso SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})

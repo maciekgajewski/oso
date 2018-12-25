@@ -12,7 +12,8 @@ public:
     void run();
 
 private:
-    sdl::win_ptr _window;
+    sdl::window _window;
+    sdl::renderer _renderer;
 };
 
 } // namespace Oso
