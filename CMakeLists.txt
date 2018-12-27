@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(SDL2 REQUIRED)
 
+set(SDL2_gfx_LIBRARIES SDL2_gfx)
+
 add_executable(oso
     main.cc
     game.cc game.hh
@@ -16,5 +18,5 @@ add_executable(oso
 
 target_include_directories(oso SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})
 
-target_link_libraries(oso ${SDL2_LIBRARIES})
+target_link_libraries(oso ${SDL2_LIBRARIES} ${SDL2_gfx_LIBRARIES})
 

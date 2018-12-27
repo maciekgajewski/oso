@@ -2,6 +2,8 @@
 
 #include "camera.hh"
 
+#include <SDL2_gfxPrimitives.h>
+
 #include <algorithm>
 #include <cmath>
 #include <iterator>
@@ -34,19 +36,20 @@ void Planet::generate(length_t avgHeight, length_t variance)
 
 void Planet::render(const Camera& cam, SDL_Renderer* renderer)
 {
-    std::vector<SDL_Point> points;
-    points.reserve(_heightMap.size() + 1);
+    std::vector<Sint16> xs;
+    std::vector<Sint16> ys;
+    xs.reserve(_heightMap.size());
+    ys.reserve(_heightMap.size());
 
-    std::transform(_heightMap.begin(), _heightMap.end(), std::back_inserter(points),
-        [&](const point_t& p) {
-            double x = p.h * std::sin(p.l * M_PI / 180.0);
-            double y = p.h * std::cos(p.l * M_PI / 180.0);
-            return cam.physToScreen(x, y);
-        });
-    points.push_back(points[0]);
-
-    SDL_SetRenderDrawColor(renderer, 150, 150, 150, SDL_ALPHA_OPAQUE);
-    ::SDL_RenderDrawLines(renderer, points.data(), points.size());
+    for (unsigned i = 0; i < _heightMap.size(); i++) {
+        const point_t& p = _heightMap[i];
+        double x = p.h * std::sin(p.l * M_PI / 180.0);
+        double y = p.h * std::cos(p.l * M_PI / 180.0);
+        SDL_Point point = cam.physToScreen(x, y);
+        xs.push_back(point.x);
+        ys.push_back(point.y);
+    }
+    ::filledPolygonRGBA(renderer, xs.data(), ys.data(), _heightMap.size(), 150, 150, 150, SDL_ALPHA_OPAQUE);
 }
 
 } // namespace Oso
