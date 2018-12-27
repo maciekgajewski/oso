@@ -9,6 +9,9 @@ add_executable(oso
     main.cc
     game.cc game.hh
     sdl.cc sdl.h
+    planet.cc planet.hh
+    types.hh
+    camera.cc camera.hh
 )
 
 target_include_directories(oso SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})
