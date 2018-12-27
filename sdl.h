@@ -21,6 +21,8 @@ private:
     std::string _e;
 };
 
+void throw_error[[noreturn]](const std::string& why);
+
 template <typename T, void(DeleterFun)(T*)>
 struct UniquePtr {
     UniquePtr() = default;
@@ -66,5 +68,12 @@ window create_window(const char* title,
 
 using renderer = UniquePtr<::SDL_Renderer, &::SDL_DestroyRenderer>;
 renderer create_renderer(SDL_Window* window, int index, Uint32 flags);
+
+using texture = UniquePtr<::SDL_Texture, &::SDL_DestroyTexture>;
+texture create_texture(SDL_Renderer* renderer,
+    Uint32 format,
+    int access,
+    int w,
+    int h);
 
 } // ns

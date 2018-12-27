@@ -2,7 +2,7 @@
 
 namespace sdl {
 
-static void throw_error[[noreturn]](const std::string& why)
+void throw_error[[noreturn]](const std::string& why)
 {
     throw exception(why + " : " + ::SDL_GetError());
 }
@@ -27,6 +27,14 @@ renderer create_renderer(SDL_Window* window, int index, Uint32 flags)
     if (!r)
         throw_error("Faield to create renderer");
     return renderer(r);
+}
+
+texture create_texture(SDL_Renderer* renderer, Uint32 format, int access, int w, int h)
+{
+    ::SDL_Texture* r = ::SDL_CreateTexture(renderer, format, access, w, h);
+    if (!r)
+        throw_error("Faield to create texture");
+    return texture(r);
 }
 
 } // sdl
