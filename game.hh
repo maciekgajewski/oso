@@ -1,9 +1,9 @@
 #pragma once
 
 #include "camera.hh"
-#include "planet.hh"
 #include "sdl.h"
 #include "types.hh"
+#include "world.hh"
 
 namespace Oso {
 
@@ -16,6 +16,7 @@ public:
 
 private:
     void render();
+    void updateTime(tick_t oldTime, tick_t currentTime);
 
     sdl::window _window;
     sdl::renderer _renderer;
@@ -25,7 +26,7 @@ private:
     tick_t _simTime = tick_t(0);
 
     Camera _camera;
-    Planet _planet;
+    World _world;
 };
 
 } // namespace Oso

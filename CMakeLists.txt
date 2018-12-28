@@ -14,6 +14,8 @@ add_executable(oso
     planet.cc planet.hh
     types.hh
     camera.cc camera.hh
+    world.cc world.hh
+    orbit.cc orbit.hh
 )
 
 target_include_directories(oso SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})

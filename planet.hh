@@ -16,7 +16,9 @@ public:
 
     void generate(length_t avgHeight, length_t variance);
 
-    void render(const Camera& cam, SDL_Renderer* renderer);
+    void render(const Camera& cam, SDL_Renderer* renderer, const location_t& pos) const;
+
+    angular_velocity_t rotation = 0.0;
 
 private:
     struct point_t {

@@ -34,7 +34,7 @@ void Planet::generate(length_t avgHeight, length_t variance)
     }
 }
 
-void Planet::render(const Camera& cam, SDL_Renderer* renderer)
+void Planet::render(const Camera& cam, SDL_Renderer* renderer, const location_t& pos) const
 {
     std::vector<Sint16> xs;
     std::vector<Sint16> ys;
@@ -43,8 +43,8 @@ void Planet::render(const Camera& cam, SDL_Renderer* renderer)
 
     for (unsigned i = 0; i < _heightMap.size(); i++) {
         const point_t& p = _heightMap[i];
-        double x = p.h * std::sin(p.l * M_PI / 180.0);
-        double y = p.h * std::cos(p.l * M_PI / 180.0);
+        double x = p.h * std::sin((p.l + pos.a) * M_PI / 180.0) + pos.x;
+        double y = p.h * std::cos((p.l + pos.a) * M_PI / 180.0) + pos.y;
         SDL_Point point = cam.physToScreen(x, y);
         xs.push_back(point.x);
         ys.push_back(point.y);
