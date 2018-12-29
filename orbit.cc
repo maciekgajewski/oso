@@ -21,7 +21,7 @@ position_t Orbit::findPosition(tick_t time, mass_t m, mass_t M) const
     double mu = G * M;
 
     // mean anomaly at time
-    angle_t Mt = M0 + time.count() * std::sqrt(G * (M + m) / (a * a * a));
+    angle_t Mt = M0 + time.count() * std::sqrt(G * M * m / (a * a * a));
 
     // accurate eccentiricity
     double E;
