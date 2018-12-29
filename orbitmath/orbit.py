@@ -25,6 +25,19 @@ class Orbit:
         self.e = 0  # eccentricity
         self.w = 0  # longitude of periapsis
 
+    def fromState(self, x, y, vx, vy, M, m):
+
+        h = x*vy - y*vx  # momentum
+        mu = M*G
+        r2 = x*x + y*y
+        r = math.sqrt(r2)
+        ex = vy*h/mu - x/r
+        ey = -vx*h/mu - y/r  # or x/r?
+        e2 = ex*ex + ey*ey
+        self.e = math.sqrt(e2)
+        self.a = (h*h)/mu*(1-e2)
+        self.w = math.atan2(ey, ex)
+
     def posAtTime(self, time, M, m):
         # see:
         # https://en.wikipedia.org/wiki/True_anomaly
@@ -99,9 +112,13 @@ o.e = 0.0549
 o.a = 0.3844E9
 o.M0 = 0
 
+o2 = Orbit()
+o2.fromState(x=0.3633E9, y=0, vx=0, vy=1082, M=M, m=m)
+
 xso, yso = fromOrbit(orbit=o, dt=DT, m=m, M=M, steps=STEPS)
+xso2, yso2 = fromOrbit(orbit=o2, dt=DT, m=m, M=M, steps=STEPS)
 
 fig, ax = plt.subplots()
 ax.set(xlabel='x', ylabel='y', title='Moon orbit')
-ax.plot(xs, ys, '+', xso, yso, 'x')
+ax.plot(xs, ys, '+', xso, yso, 'x', xso2, yso2, 'o')
 plt.show()
