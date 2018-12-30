@@ -8,12 +8,12 @@ Camera::Camera(int screenW, int screenH)
 {
 }
 
-SDL_Point Camera::physToScreen(double x, double y) const
+SDL_Point Camera::physToScreen(const position_t& pos) const
 {
     SDL_Point res;
 
-    res.x = int(_screenW / 2 + x * _scale);
-    res.y = int(_screenH / 2 - y * _scale);
+    res.x = int(_screenW / 2 + pos.x * _scale);
+    res.y = int(_screenH / 2 - pos.y * _scale);
 
     return res;
 }

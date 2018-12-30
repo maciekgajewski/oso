@@ -43,9 +43,8 @@ void Planet::render(const Camera& cam, SDL_Renderer* renderer, const location_t&
 
     for (unsigned i = 0; i < _heightMap.size(); i++) {
         const point_t& p = _heightMap[i];
-        double x = p.h * std::sin((p.l + pos.a) * M_PI / 180.0) + pos.x;
-        double y = p.h * std::cos((p.l + pos.a) * M_PI / 180.0) + pos.y;
-        SDL_Point point = cam.physToScreen(x, y);
+        position_t phys = p.h * position_t{ std::sin((p.l + pos.a) * M_PI / 180.0), std::cos((p.l + pos.a) * M_PI / 180.0) } + pos.pos;
+        SDL_Point point = cam.physToScreen(phys);
         xs.push_back(point.x);
         ys.push_back(point.y);
     }

@@ -6,18 +6,31 @@ World::World()
 {
 }
 
-World::id_t World::addPlanet(const std::string& name)
+entity_id World::addPlanet(const std::string& name, mass_t m)
 {
-    id_t id = createEntity(name);
+    entity_id id = createEntity(name);
+    assert(_planets.find(id) == _planets.end());
+    assert(_gravitySources.find(id) == _gravitySources.end());
     _planets[id] = Planet();
+    _gravitySources[id] = GravitySource{ m };
     return id;
 }
 
-World::id_t World::createEntity(const std::string& name)
+entity_id World::addOrbitingPlanet(const std::string& name, mass_t m, id_t parent, const Orbit& orbit)
+{
+    entity_id id = addPlanet(name, m);
+
+    assert(_forcedOrbits.find(id) == _forcedOrbits.end());
+    _forcedOrbits[id] = ForcedOrbit{ parent, orbit };
+
+    return id;
+}
+
+entity_id World::createEntity(const std::string& name)
 {
     _entities.push_back(entity_t{ name });
     _positions.emplace_back();
-    return id_t(_entities.size() - 1);
+    return entity_id(_entities.size() - 1);
 }
 
 } // namespace Oso

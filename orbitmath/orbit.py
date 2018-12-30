@@ -73,13 +73,18 @@ class Orbit:
 def semiImplicitEuler(y0, x0, vx0, vy0, m, M, dt, steps):
     xs = []
     ys = []
+    vys = []
+    vxs = []
     x = x0
     y = y0
     vx = vx0
     vy = vy0
-    for _ in range(steps):
+    mu = (M+m)*G
+    for step in range(steps):
         xs.append(x)
         ys.append(y)
+        vys.append(vy)
+        vxs.append(vx)
         r2 = x*x + y*y
         r = math.sqrt(r2)
         a = G*(M)/r2
@@ -90,7 +95,22 @@ def semiImplicitEuler(y0, x0, vx0, vy0, m, M, dt, steps):
         x += vx*dt
         y += vy*dt
 
-    return (xs, ys)
+        # looking for invariants
+        h = x*vy - y*vx  # momentum
+        v2 = vx*vx + vy*vy
+        Etotal = v2/2 - mu/r  # Total energy
+
+        # eccentiricity
+        ex = vy*h/mu - x/r
+        ey = -vx*h/mu - y/r
+
+        # semi-major
+        a = -mu/(2*Etotal)
+
+        print('#{}/{}\th={}, Et={}, e=({}, {}), a={}'.format(step,
+                                                             steps, h, Etotal, ex, ey, a))
+
+    return (xs, ys, vxs, vys)
 
 
 def fromOrbit(orbit, m, M, dt, steps):
@@ -114,13 +134,15 @@ DT = 100
 #                           m = m, M = M, dt = 100, steps = 26000)
 
 # starting at periapsis
-xs, ys = semiImplicitEuler(y0=0, x0=0.3633E9, vx0=0, vy0=1082,
-                           m=m, M=M, dt=DT, steps=STEPS)
+xs, ys, vxs, vys = semiImplicitEuler(y0=0, x0=0.3633E9, vx0=0, vy0=1082,
+                                     m=m, M=M, dt=DT, steps=STEPS)
 
 # from orbit
 o = Orbit()
-o.e = 0.0549
-o.a = 0.3844E9
+# o.e = 0.0549 # from tables
+o.e = 0.06710  # calculated
+# o.a = 0.3844E9  # from tables
+o.a = 0.3894E9  # calculated
 o.M0 = 0
 
 #o2 = Orbit()
@@ -132,5 +154,14 @@ xso, yso = fromOrbit(orbit=o, dt=DT, m=m, M=M, steps=STEPS)
 fig, ax = plt.subplots()
 ax.set(xlabel='x', ylabel='y', title='Moon orbit')
 #ax.plot(xs, ys, '+', xso, yso, 'x', xso2, yso2, 'o')
-ax.plot(xs, ys, '+', xso, yso, 'x')
+ax.plot(xs, ys, '+', label='si eurler')
+ax.plot(xso, yso, 'x', label='calculated')
+
+
+# momentum
+# _, ax2 = plt.subplots()
+# hs = [x*vy - y*vx for x, y, vx, vy in zip(xs, ys, vxs, vys)]
+# ax2.plot(hs, label='momentum')
+
+plt.legend()
 plt.show()

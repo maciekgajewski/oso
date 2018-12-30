@@ -10,7 +10,7 @@ class Camera {
 public:
     Camera(int screenW, int screenH);
 
-    SDL_Point physToScreen(double x, double y) const;
+    SDL_Point physToScreen(const position_t& pos) const;
 
     void setZoomLevel(int zoom);
 

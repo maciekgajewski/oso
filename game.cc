@@ -1,5 +1,7 @@
 #include "game.hh"
 
+#include <iostream>
+
 namespace Oso {
 
 using namespace std::literals;
@@ -12,17 +14,16 @@ Game::Game()
 
     _buffer = sdl::create_texture(_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, 400, 300);
 
-    World::id_t earthId = _world.addPlanet("Earth");
+    entity_id earthId = _world.addPlanet("Earth", 5.9724E16);
     Planet& earth = _world.getPlanet(earthId);
     earth.generate(10000, 1000);
     earth.rotation = 10;
 
-    World::id_t moonId = _world.addPlanet("Moon");
+    Orbit moonOrbit = Orbit::circular(50000, 0);
+    entity_id moonId = _world.addOrbitingPlanet("Moon", 0.0, earthId, moonOrbit);
     Planet& moon = _world.getPlanet(moonId);
     moon.generate(2000, 200);
     moon.rotation = 30;
-    position_t& moonPos = _world.getPosition(moonId);
-    moonPos.x = 50000;
 
     _camera.setZoomLevel(-9);
 }
@@ -79,6 +80,11 @@ void Game::updateTime(tick_t oldTime, tick_t currentTime)
 
     _world.visitPlanets([&](location_t& position, Planet& planet) {
         position.a += planet.rotation * dt.count() * 0.001;
+    });
+
+    _world.visitForcedOrbits([&](location_t& position, ForcedOrbit& planet) {
+        mass_t M = _world.getGravitySource(planet.parent).mass;
+        position.pos = planet.orbit.findPosition(currentTime, 0, M);
     });
 }
 
