@@ -28,13 +28,23 @@ class Orbit:
     def fromState(self, x, y, vx, vy, M, m):
 
         h = x*vy - y*vx  # momentum
-        mu = M*G
+        mu = (M+m)*G
         r2 = x*x + y*y
-        r = math.sqrt(r2)
+        v2 = vx*vx + vy*vy
+        r = math.sqrt(r2)  # orbital separation
         ex = vy*h/mu - x/r
-        ey = -vx*h/mu - y/r  # or x/r?
+        ey = -vx*h/mu - y/r
+        rv = x*vx + y*vy  # dot product of v and r vectors
+        #ex = (v2 - mu/r)*x/mu - rv*vx/mu
+        #ey = (v2 - mu/r)*y/mu - rv*vy/mu
+
         e2 = ex*ex + ey*ey
         self.e = math.sqrt(e2)
+        E = v2/2 - mu/r
+        a = -mu/(2*E)  # semi major
+        p = h/mu  # semi-latus rectum
+        e_alt = math.sqrt(1 - p/a)  # eccentricity, scalar
+
         self.a = (h*h)/mu*(1-e2)
         self.w = math.atan2(ey, ex)
 
@@ -95,8 +105,9 @@ def fromOrbit(orbit, m, M, dt, steps):
 
 
 M = 5.9724E24  # mass of earth
-m = 0.07346E24  # mass of the moon
-STEPS = 26
+# m = 0.07346E24  # mass of the moon
+m = 0
+STEPS = 26000
 DT = 100
 # starting at apoapsis
 # xs, ys = semiImplicitEuler(y0=0, x0=0.4055E9, vx0=0, vy0=970,
@@ -112,13 +123,14 @@ o.e = 0.0549
 o.a = 0.3844E9
 o.M0 = 0
 
-o2 = Orbit()
-o2.fromState(x=0.3633E9, y=0, vx=0, vy=1082, M=M, m=m)
+#o2 = Orbit()
+#o2.fromState(x=0.3633E9, y=0, vx=0, vy=1082, M=M, m=m)
 
 xso, yso = fromOrbit(orbit=o, dt=DT, m=m, M=M, steps=STEPS)
-xso2, yso2 = fromOrbit(orbit=o2, dt=DT, m=m, M=M, steps=STEPS)
+#xso2, yso2 = fromOrbit(orbit=o2, dt=DT, m=m, M=M, steps=STEPS)
 
 fig, ax = plt.subplots()
 ax.set(xlabel='x', ylabel='y', title='Moon orbit')
-ax.plot(xs, ys, '+', xso, yso, 'x', xso2, yso2, 'o')
+#ax.plot(xs, ys, '+', xso, yso, 'x', xso2, yso2, 'o')
+ax.plot(xs, ys, '+', xso, yso, 'x')
 plt.show()
