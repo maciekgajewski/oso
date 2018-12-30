@@ -5,28 +5,33 @@
 #include "types.hh"
 #include "world.hh"
 
+#include "gui_control.hh"
+
 namespace Oso {
 
 class Game {
 public:
-    Game();
+  Game();
 
-    // Run the main loop
-    void run();
+  // Run the main loop
+  void run();
 
 private:
-    void render();
-    void updateTime(tick_t oldTime, tick_t currentTime);
+  void initGui();
 
-    sdl::window _window;
-    sdl::renderer _renderer;
-    sdl::texture _buffer;
+  void render();
+  void updateTime(tick_t oldTime, tick_t currentTime);
 
-    tick_t _realTime = tick_t(0);
-    tick_t _simTime = tick_t(0);
+  sdl::window _window;
+  sdl::renderer _renderer;
+  sdl::texture _buffer;
 
-    Camera _camera;
-    World _world;
+  tick_t _realTime = tick_t(0);
+  tick_t _simTime = tick_t(0);
+
+  Camera _camera;
+  World _world;
+  Gui::Control _gui;
 };
 
 } // namespace Oso
