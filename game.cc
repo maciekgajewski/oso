@@ -38,14 +38,14 @@ void Game::run() {
       if (e.type == SDL_QUIT) {
         return;
       }
-      _gui.onEvent(e);
+      sendEventToGui(e);
     }
 
-    ::SDL_Delay(100);
+    ::SDL_Delay(60);
 
-    _realTime += 100ms;
+    _realTime += 60ms;
     tick_t oldTime = _simTime;
-    _simTime += 100ms;
+    _simTime += 60ms;
 
     render();
     updateTime(oldTime, _simTime);
@@ -102,6 +102,19 @@ void Game::updateTime(tick_t oldTime, tick_t currentTime) {
     mass_t M = _world.getGravitySource(planet.parent).mass;
     position.pos = planet.orbit.findPosition(currentTime, 0, M);
   });
+}
+
+void Game::sendEventToGui(SDL_Event &e) {
+  // re-scale all mouse events
+  if (e.type == SDL_MOUSEMOTION) {
+    e.motion.x /= 2;
+    e.motion.y /= 2;
+  } else if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
+    e.button.x /= 2;
+    e.button.y /= 2;
+  }
+
+  _gui.onEvent(e);
 }
 
 } // namespace Oso

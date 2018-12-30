@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 namespace Oso {
 namespace Gui {
@@ -41,20 +42,50 @@ void Control::removeChild(Control *c) {
 }
 
 bool Control::onEvent(const SDL_Event &e) {
-  if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
-    SDL_Point mouseCoords{e.button.x, e.button.y};
+
+  if (e.type == SDL_MOUSEMOTION) {
+
+    SDL_Point mouseCoords{e.motion.x, e.motion.y};
 
     for (Control *c : _children) {
       if (SDL_PointInRect(&mouseCoords, &c->_rect)) {
+        if (_controlUnderMouse != c) {
+          if (_controlUnderMouse)
+            _controlUnderMouse->onMouseLeave();
+          _controlUnderMouse = c;
+          _controlUnderMouse->onMouseEnter();
+        }
         SDL_Event copy = e;
-        copy.button.x -= c->_rect.x;
-        copy.button.y -= c->_rect.y;
-        if (c->onEvent(copy))
-          return true;
+        copy.motion.x -= c->_rect.x;
+        copy.motion.y -= c->_rect.y;
+        return c->onEvent(copy);
       }
+    }
+    if (_controlUnderMouse)
+      _controlUnderMouse->onMouseLeave();
+    _controlUnderMouse = nullptr;
+  }
+
+  else if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
+    if (_controlUnderMouse) {
+      SDL_Event copy = e;
+      copy.button.x -= _controlUnderMouse->_rect.x;
+      copy.button.y -= _controlUnderMouse->_rect.y;
+      if (_controlUnderMouse->onEvent(copy))
+        return true;
     }
     return internalOnEvent(e);
   }
+
+  else if (e.type == SDL_WINDOWEVENT) {
+    if (e.window.event == SDL_WINDOWEVENT_LEAVE) {
+      if (_controlUnderMouse) {
+        _controlUnderMouse->onMouseLeave();
+        _controlUnderMouse = nullptr;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -66,10 +97,6 @@ void Control::render(SDL_Renderer *renderer) {
 }
 
 bool Control::internalOnEvent(const SDL_Event &e) { return false; }
-
-void Control::internalRender(SDL_Renderer *renderer) {
-  // nothing
-}
 
 ImgButton::ImgButton(const std::string &imgPath, const SDL_Point &pos,
                      const ImgButton::handler_t &handler) {
@@ -87,6 +114,11 @@ ImgButton::ImgButton(const std::string &imgPath, const SDL_Point &pos,
 void ImgButton::internalRender(SDL_Renderer *renderer) {
   if (!_texture) {
     _texture = sdl::create_texture_from_surface(renderer, _image);
+  }
+
+  if (_hasMouse) {
+    SDL_SetRenderDrawColor(renderer, 32, 32, 64, 128);
+    SDL_RenderFillRect(renderer, &_rect);
   }
 
   SDL_Rect srcrect{0, 0, _rect.w, _rect.h};
