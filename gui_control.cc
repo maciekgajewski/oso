@@ -99,7 +99,8 @@ void Control::render(SDL_Renderer *renderer) {
 bool Control::internalOnEvent(const SDL_Event &e) { return false; }
 
 ImgButton::ImgButton(const std::string &imgPath, const SDL_Point &pos,
-                     const ImgButton::handler_t &handler) {
+                     const ImgButton::handler_t &handler)
+    : _handler(handler) {
   sdl::string basePath = sdl::get_base_path();
   std::string fullPath = (const char *)basePath;
   fullPath += imgPath;
@@ -116,13 +117,34 @@ void ImgButton::internalRender(SDL_Renderer *renderer) {
     _texture = sdl::create_texture_from_surface(renderer, _image);
   }
 
-  if (_hasMouse) {
+  if (_pressed) {
+    SDL_SetRenderDrawColor(renderer, 32, 32, 128, 128);
+    SDL_RenderFillRect(renderer, &_rect);
+  } else if (_hasMouse) {
     SDL_SetRenderDrawColor(renderer, 32, 32, 64, 128);
     SDL_RenderFillRect(renderer, &_rect);
   }
 
   SDL_Rect srcrect{0, 0, _rect.w, _rect.h};
   SDL_RenderCopy(renderer, _texture, &srcrect, &_rect);
+}
+
+bool ImgButton::internalOnEvent(const SDL_Event &e) {
+
+  if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+    _pressed = true;
+    return true;
+  }
+
+  if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT) {
+    if (_pressed) {
+      _pressed = false;
+      if (_handler)
+        _handler();
+      return true;
+    }
+  }
+  return false;
 }
 
 } // namespace Gui

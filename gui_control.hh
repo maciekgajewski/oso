@@ -54,6 +54,11 @@ public:
 
 private:
   void internalRender(SDL_Renderer *renderer) override;
+  bool internalOnEvent(const SDL_Event &e) override;
+
+  void internalOnMouseLeave() override { _pressed = false; }
+
+  bool _pressed = false;
 
   handler_t _handler;
   sdl::surface _image;
