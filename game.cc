@@ -44,19 +44,20 @@ void Game::run() {
     ::SDL_Delay(60);
 
     _realTime += 60ms;
-    tick_t oldTime = _simTime;
-    _simTime += 60ms;
-
-    render();
-    updateTime(oldTime, _simTime);
+    if (!_paused) {
+      tick_t oldTime = _simTime;
+      _simTime += 60ms;
+      render();
+      updateTime(oldTime, _simTime);
+    } else
+      render();
   }
 }
 
 void Game::initGui() {
 
   auto pauseButton = std::make_unique<Gui::ImgButton>(
-      "resources/pause.png", SDL_Point{0, 0},
-      [&] { std::cout << "pause!" << std::endl; });
+      "resources/pause.png", SDL_Point{0, 0}, [&] { _paused = !_paused; });
 
   _gui.addChild(std::move(pauseButton));
 }
