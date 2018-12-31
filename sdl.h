@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include <memory>
 #include <stdexcept>
@@ -70,5 +71,8 @@ inline void free_char(char *c) { ::SDL_free(c); }
 
 using string = UniquePtr<char, &free_char>;
 string get_base_path();
+
+using ttf_font = UniquePtr<TTF_Font, &TTF_CloseFont>;
+ttf_font open_font_rw(SDL_RWops *rw, bool close, int ptsize);
 
 } // namespace sdl

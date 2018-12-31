@@ -145,5 +145,26 @@ bool ImgButton::internalOnEvent(const SDL_Event &e) {
   return false;
 }
 
+Text::Text(const std::string &text, const SDL_Point &pos, TTF_Font *font)
+    : _text(text), _font(font) {
+
+  _rect.x = pos.x;
+  _rect.y = pos.y;
+}
+
+void Text::setText(const std::string &text) { _text = text; }
+
+void Text::internalRender(SDL_Renderer *renderer) {
+  // naive rendering
+  sdl::surface surf = sdl::surface(TTF_RenderUTF8_Solid(
+      _font, _text.c_str(), SDL_Color{0xff, 0xff, 0x00, 0xff}));
+  sdl::texture texture = sdl::create_texture_from_surface(renderer, surf);
+
+  SDL_Rect srcrect{0, 0, surf->w, surf->h};
+  _rect.w = surf->w;
+  _rect.h = surf->h;
+  SDL_RenderCopy(renderer, texture, &srcrect, &_rect);
+}
+
 } // namespace Gui
 } // namespace Oso

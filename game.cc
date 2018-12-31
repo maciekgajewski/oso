@@ -1,5 +1,7 @@
 #include "game.hh"
 
+#include "resources.hh"
+
 #include <iostream>
 #include <memory>
 
@@ -56,10 +58,17 @@ void Game::run() {
 
 void Game::initGui() {
 
+  auto fontResource = open_resource("fonts/PlanetaryContact.ttf");
+  _guiFont = sdl::open_font_rw(fontResource, true, 10);
+
   auto pauseButton = std::make_unique<Gui::ImgButton>(
-      "resources/pause.png", SDL_Point{0, 0}, [&] { _paused = !_paused; });
+      "pause.png", SDL_Point{0, 0}, [&] { _paused = !_paused; });
+
+  auto timeText = std::make_unique<Gui::Text>(
+      "Hello", SDL_Point{pauseButton->width(), 0}, _guiFont);
 
   _gui.addChild(std::move(pauseButton));
+  _gui.addChild(std::move(timeText));
 }
 
 void Game::render() {

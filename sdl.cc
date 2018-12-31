@@ -62,4 +62,12 @@ surface img_load_rw(::SDL_RWops *rw, bool close) {
   return surface(s);
 }
 
+ttf_font open_font_rw(SDL_RWops *rw, bool close, int ptsize) {
+  TTF_Font *font = TTF_OpenFontRW(rw, close ? 1 : 0, ptsize);
+  if (!font) {
+    throw_error("Error opening font");
+  }
+  return ttf_font(font);
+}
+
 } // namespace sdl

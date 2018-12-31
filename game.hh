@@ -33,6 +33,7 @@ private:
   Camera _camera;
   World _world;
   Gui::Control _gui;
+  sdl::ttf_font _guiFont;
 };
 
 } // namespace Oso

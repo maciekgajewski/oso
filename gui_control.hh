@@ -20,6 +20,9 @@ public:
   bool onEvent(const SDL_Event &e);
   void render(SDL_Renderer *renderer);
 
+  int width() const { return _rect.w; }
+  int height() const { return _rect.h; }
+
 protected:
   virtual bool internalOnEvent(const SDL_Event &e);
   virtual void internalRender(SDL_Renderer *renderer) {}
@@ -63,6 +66,17 @@ private:
   handler_t _handler;
   sdl::surface _image;
   sdl::texture _texture;
+};
+
+class Text : public Control {
+public:
+  Text(const std::string &text, const SDL_Point &pos, TTF_Font *font);
+  void setText(const std::string &text);
+
+private:
+  void internalRender(SDL_Renderer *renderer) override;
+  std::string _text;
+  TTF_Font *_font;
 };
 
 } // namespace Gui

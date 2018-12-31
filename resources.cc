@@ -9,11 +9,15 @@ public:
   Resources() {
     sdl::string basePath = sdl::get_base_path();
     _base = (const char *)basePath;
+    _base += "resources/";
   }
 
   SDL_RWops *open_resource(const std::string &name) {
     std::string fp = fullPath(name);
-    return SDL_RWFromFile(fp.c_str(), "r");
+    SDL_RWops *res = SDL_RWFromFile(fp.c_str(), "r");
+    if (!res)
+      throw std::runtime_error("Error opening resource: " + name);
+    return res;
   }
 
 private:
