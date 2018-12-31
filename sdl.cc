@@ -55,4 +55,11 @@ surface img_load(const std::string &path) {
   return surface(s);
 }
 
+surface img_load_rw(::SDL_RWops *rw, bool close) {
+  SDL_Surface *s = IMG_Load_RW(rw, close ? 1 : 0);
+  if (!s)
+    throw_error("Failed to load image from rw");
+  return surface(s);
+}
+
 } // namespace sdl

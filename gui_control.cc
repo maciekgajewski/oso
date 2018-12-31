@@ -1,5 +1,6 @@
 #include "gui_control.hh"
 
+#include "resources.hh"
 #include "sdl.h"
 
 #include <SDL_image.h>
@@ -101,11 +102,8 @@ bool Control::internalOnEvent(const SDL_Event &e) { return false; }
 ImgButton::ImgButton(const std::string &imgPath, const SDL_Point &pos,
                      const ImgButton::handler_t &handler)
     : _handler(handler) {
-  sdl::string basePath = sdl::get_base_path();
-  std::string fullPath = (const char *)basePath;
-  fullPath += imgPath;
 
-  _image = sdl::img_load(fullPath);
+  _image = sdl::img_load_rw(open_resource(imgPath), true);
   _rect.x = pos.x;
   _rect.y = pos.y;
   _rect.h = _image->h;

@@ -62,6 +62,7 @@ texture create_texture(SDL_Renderer *renderer, Uint32 format, int access, int w,
 
 using surface = UniquePtr<::SDL_Surface, &::SDL_FreeSurface>;
 surface img_load(const std::string &path);
+surface img_load_rw(::SDL_RWops *rw, bool close);
 texture create_texture_from_surface(SDL_Renderer *renderer,
                                     SDL_Surface *surface);
 

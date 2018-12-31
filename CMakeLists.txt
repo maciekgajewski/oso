@@ -7,6 +7,7 @@ find_package(SDL2 REQUIRED)
 
 set(SDL2_gfx_LIBRARIES SDL2_gfx)
 set(SDL2_image_LIBRARIES SDL2_image)
+set(SDL2_ttf_LIBRARIES SDL2_ttf)
 
 add_executable(oso
     main.cc
@@ -19,9 +20,10 @@ add_executable(oso
     orbit.cc orbit.hh
     components.hh
     gui_control.cc gui_control.hh
+    resources.cc resources.hh
 )
 
 target_include_directories(oso SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})
 
-target_link_libraries(oso ${SDL2_LIBRARIES} ${SDL2_gfx_LIBRARIES} ${SDL2_image_LIBRARIES})
+target_link_libraries(oso ${SDL2_LIBRARIES} ${SDL2_gfx_LIBRARIES} ${SDL2_image_LIBRARIES} ${SDL2_ttf_LIBRARIES})
 
