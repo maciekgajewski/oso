@@ -21,6 +21,7 @@ add_executable(oso
     components.hh
     gui_control.cc gui_control.hh
     resources.cc resources.hh
+    game_gui.cc game_gui.hh
 )
 
 target_include_directories(oso SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})

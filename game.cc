@@ -1,7 +1,5 @@
 #include "game.hh"
 
-#include "resources.hh"
-
 #include <iostream>
 #include <memory>
 
@@ -9,7 +7,7 @@ namespace Oso {
 
 using namespace std::literals;
 
-Game::Game() : _camera(400, 300) {
+Game::Game() : _camera(400, 300), _gui(*this) {
   _window = sdl::create_window("OWO", SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
   _renderer = sdl::create_renderer(_window, -1, SDL_RENDERER_ACCELERATED);
@@ -29,8 +27,6 @@ Game::Game() : _camera(400, 300) {
   moon.rotation = 30;
 
   _camera.setZoomLevel(-9);
-
-  initGui();
 }
 
 void Game::run() {
@@ -40,7 +36,7 @@ void Game::run() {
       if (e.type == SDL_QUIT) {
         return;
       }
-      sendEventToGui(e);
+      _gui.onEvent(e);
     }
 
     ::SDL_Delay(60);
@@ -49,26 +45,14 @@ void Game::run() {
     if (!_paused) {
       tick_t oldTime = _simTime;
       _simTime += 60ms;
+      _gui.update();
       render();
       updateTime(oldTime, _simTime);
-    } else
+    } else {
+      _gui.update();
       render();
+    }
   }
-}
-
-void Game::initGui() {
-
-  auto fontResource = open_resource("fonts/PlanetaryContact.ttf");
-  _guiFont = sdl::open_font_rw(fontResource, true, 10);
-
-  auto pauseButton = std::make_unique<Gui::ImgButton>(
-      "pause.png", SDL_Point{0, 0}, [&] { _paused = !_paused; });
-
-  auto timeText = std::make_unique<Gui::Text>(
-      "Hello", SDL_Point{pauseButton->width(), 0}, _guiFont);
-
-  _gui.addChild(std::move(pauseButton));
-  _gui.addChild(std::move(timeText));
 }
 
 void Game::render() {
@@ -112,19 +96,6 @@ void Game::updateTime(tick_t oldTime, tick_t currentTime) {
     mass_t M = _world.getGravitySource(planet.parent).mass;
     position.pos = planet.orbit.findPosition(currentTime, 0, M);
   });
-}
-
-void Game::sendEventToGui(SDL_Event &e) {
-  // re-scale all mouse events
-  if (e.type == SDL_MOUSEMOTION) {
-    e.motion.x /= 2;
-    e.motion.y /= 2;
-  } else if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
-    e.button.x /= 2;
-    e.button.y /= 2;
-  }
-
-  _gui.onEvent(e);
 }
 
 } // namespace Oso

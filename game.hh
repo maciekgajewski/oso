@@ -1,11 +1,10 @@
 #pragma once
 
 #include "camera.hh"
+#include "game_gui.hh"
 #include "sdl.h"
 #include "types.hh"
 #include "world.hh"
-
-#include "gui_control.hh"
 
 namespace Oso {
 
@@ -16,12 +15,14 @@ public:
   // Run the main loop
   void run();
 
-private:
-  void initGui();
+  bool isPaused() const { return _paused; }
+  void setPaused(bool p) { _paused = p; }
 
+  tick_t getSimTime() const { return _simTime; }
+
+private:
   void render();
   void updateTime(tick_t oldTime, tick_t currentTime);
-  void sendEventToGui(::SDL_Event &e);
   sdl::window _window;
   sdl::renderer _renderer;
   sdl::texture _buffer;
@@ -32,8 +33,7 @@ private:
 
   Camera _camera;
   World _world;
-  Gui::Control _gui;
-  sdl::ttf_font _guiFont;
+  GameGui _gui;
 };
 
 } // namespace Oso
