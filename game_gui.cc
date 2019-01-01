@@ -7,7 +7,9 @@ namespace Oso {
 
 GameGui::GameGui(Game &game) : _game(game) {
 
-  auto fontResource = open_resource("fonts/PlanetaryContact.ttf");
+  auto fontResource = open_resource("fonts/PlanetaryContact.ttf"); // not
+  // very readable, but cool
+  // auto fontResource = open_resource("fonts/pixelated.ttf"); // really small
   _font = sdl::open_font_rw(fontResource, true, 8);
 
   auto pauseButton =
@@ -16,7 +18,7 @@ GameGui::GameGui(Game &game) : _game(game) {
       });
 
   _simTimeText = std::make_unique<Gui::Text>(
-      "00h00m00s", SDL_Point{pauseButton->width(), 0}, _font);
+      "00:00:00", SDL_Point{pauseButton->width(), 0}, _font);
 
   _main.addChild(std::move(pauseButton));
   _main.addChild(_simTimeText.get());
@@ -46,8 +48,7 @@ void GameGui::update() {
   std::uint64_t hours = minutes / 60;
 
   char text[20];
-  std::sprintf(text, "%02lluh%02llum%02llus", hours, minutes % 60,
-               seconds % 60);
+  std::sprintf(text, "%02llu:%02llu:%02llu", hours, minutes % 60, seconds % 60);
   _simTimeText->setText(text);
 }
 

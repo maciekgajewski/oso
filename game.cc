@@ -55,6 +55,30 @@ void Game::run() {
   }
 }
 
+void renderOrbit(const Camera &cam, SDL_Renderer *renderer, position_t center,
+                 Orbit orbit) {
+
+  const int SEGMENTS = 36;
+  std::vector<SDL_Point> points;
+  points.reserve(SEGMENTS + 1);
+
+  for (int i = 0; i < SEGMENTS; ++i) {
+    angle_t tau = i * M_PI / 18; // iterate over eccentric anomaly
+    double ct = std::cos(tau);
+    double st = std::sin(tau);
+
+    distnce_t r = orbit.a * (1 - orbit.e * ct);
+    angle_t o = std::atan2(std::sqrt(1 - orbit.e * orbit.e) * st, ct - orbit.e);
+
+    position_t phys = center + r * position_t{std::cos(o), std::sin(o)};
+    points.push_back(cam.physToScreen(phys));
+  }
+  points.push_back(points.front());
+
+  SDL_SetRenderDrawColor(renderer, 0, 0, 64, SDL_ALPHA_OPAQUE);
+  SDL_RenderDrawLines(renderer, points.data(), SEGMENTS + 1);
+}
+
 void Game::render() {
 
   // render on buffer
@@ -65,11 +89,19 @@ void Game::render() {
   SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(_renderer);
 
-  _gui.render(_renderer);
+  // orbits
+  _world.visitForcedOrbits([&](location_t &position, ForcedOrbit &orbit) {
+    position_t pos = _world.getPosition(orbit.parent).pos;
+    renderOrbit(_camera, _renderer, pos, orbit.orbit);
+  });
 
+  // planets
   _world.visitPlanets([&](const location_t &position, const Planet &planet) {
     planet.render(_camera, _renderer, position);
   });
+
+  // render gui
+  _gui.render(_renderer);
 
   SDL_RenderPresent(_renderer);
 
