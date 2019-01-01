@@ -36,7 +36,9 @@ void Game::run() {
       if (e.type == SDL_QUIT) {
         return;
       }
-      _gui.onEvent(e);
+
+      if (!_gui.onEvent(e))
+        onCameraEvent(e);
     }
 
     ::SDL_Delay(60);
@@ -128,6 +130,20 @@ void Game::updateTime(tick_t oldTime, tick_t currentTime) {
     mass_t M = _world.getGravitySource(planet.parent).mass;
     position.pos = planet.orbit.findPosition(currentTime, 0, M);
   });
+}
+
+bool Game::onCameraEvent(const SDL_Event &e) {
+
+  if (e.type == SDL_MOUSEWHEEL) {
+    if (e.wheel.y < 0 && _camera.getZoomLevel() > -20)
+      _camera.setZoomLevel(_camera.getZoomLevel() - 1);
+    else if (e.wheel.y > 0 && _camera.getZoomLevel() < 0)
+      _camera.setZoomLevel(_camera.getZoomLevel() + 1);
+
+    return true;
+  }
+
+  return false;
 }
 
 } // namespace Oso

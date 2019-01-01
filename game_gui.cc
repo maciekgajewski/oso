@@ -24,7 +24,7 @@ GameGui::GameGui(Game &game) : _game(game) {
   _main.addChild(_simTimeText.get());
 }
 
-void GameGui::onEvent(SDL_Event e) {
+bool GameGui::onEvent(SDL_Event e) {
 
   // re-scale all mouse events
   if (e.type == SDL_MOUSEMOTION) {
@@ -35,7 +35,7 @@ void GameGui::onEvent(SDL_Event e) {
     e.button.y /= 2;
   }
 
-  _main.onEvent(e);
+  return _main.onEvent(e);
 }
 
 void GameGui::render(SDL_Renderer *renderer) { _main.render(renderer); }

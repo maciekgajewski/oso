@@ -10,7 +10,7 @@ class GameGui {
 public:
   GameGui(Game &game);
 
-  void onEvent(SDL_Event e);
+  bool onEvent(SDL_Event e);
   void render(SDL_Renderer *renderer);
   void update();
 

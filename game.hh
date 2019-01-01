@@ -23,6 +23,9 @@ public:
 private:
   void render();
   void updateTime(tick_t oldTime, tick_t currentTime);
+
+  bool onCameraEvent(const SDL_Event &e);
+
   sdl::window _window;
   sdl::renderer _renderer;
   sdl::texture _buffer;
