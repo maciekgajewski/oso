@@ -33,6 +33,7 @@ private:
   tick_t _realTime = tick_t(0);
   tick_t _simTime = tick_t(0);
   bool _paused = false;
+  unsigned _timeAccel = 1000;
 
   Camera _camera;
   World _world;
